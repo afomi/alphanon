@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>
+      Alphanon
+    </title>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+      }
+    </style>
+    <script type="module">
+      import * as THREE from '/assets/js/three.js';
+      import { OrbitControls } from '/assets/js/orbitcontrols.js';
+
+      // Set up the Three.js scene
+      var scene = new THREE.Scene();
+      var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+      var renderer = new THREE.WebGLRenderer();
+      renderer.setSize( window.innerWidth, window.innerHeight );
+
+      var canvas = document.getElementById('threejs-canvas');
+      canvas.appendChild( renderer.domElement );
+
+      const controls = new OrbitControls( camera, renderer.domElement );
+
+      camera.position.set( 0, 0, 20 );
+      // camera.lookAt( 0, 0, 0 );
+
+      // Create the E8 mesh geometry
+      var geometry = new THREE.CircleGeometry(10, 36);
+      // Add vertices and faces to the geometry to define the E8 shape
+
+      // Create the E8 mesh material
+      var material = new THREE.MeshBasicMaterial( { color: 0x73b3e7 } );
+
+      // Create the E8 mesh object
+      var mesh = new THREE.Mesh( geometry, material );
+
+      // Add the mesh object to the scene
+      scene.add( mesh );
+      scene.background =  new THREE.Color( 0xf0f0f0 );
+      // Use the Three.js animation loop to update and render the scene
+      function animate() {
+        requestAnimationFrame( animate );
+        // Update the mesh position or rotation if desired
+        	controls.update();
+
+        renderer.render( scene, camera );
+      }
+      animate();
+    </script>
+  </head>
+  <body>
+    <h1>
+      <a href="/">Alphanon</a>
+    </h1>
+    <p>
+      The first element, according to Walter Russell's periodic table.
+    </p>
+    <div id="threejs-canvas"></div>
+  </body>
+</html>
