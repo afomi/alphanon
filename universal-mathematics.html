@@ -49,6 +49,7 @@
   <script type="module">
     import * as THREE from 'https://esm.sh/three@0.176.0/build/three.module.js';
     import { OrbitControls } from 'https://esm.sh/three@0.176.0/examples/jsm/controls/OrbitControls.js';
+    import { CSS2DRenderer, CSS2DObject } from 'https://esm.sh/three@0.176.0/examples/jsm/renderers/CSS2DRenderer.js';
 
     // Standard 3D Layout:
     // X = horizontal (left/right)
@@ -57,74 +58,452 @@
 
     // Scene setup
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x111111);
+    scene.background = new THREE.Color(0xf5f5dc);
 
-    // Camera
-    const camera = new THREE.PerspectiveCamera(
-      75,
-      window.innerWidth / window.innerHeight,
+    // Camera - orthographic for 2D diagram view
+    // Use height-based frustum to maintain aspect ratio (circles stay circular)
+    const frustumHeight = 120;
+    const aspect = window.innerWidth / window.innerHeight;
+    const camera = new THREE.OrthographicCamera(
+      -frustumHeight * aspect / 2,
+      frustumHeight * aspect / 2,
+      frustumHeight / 2,
+      -frustumHeight / 2,
       0.1,
       1000
     );
-    camera.position.set(30, 20, 30);
-    camera.lookAt(0, 0, 0);
+    camera.position.set(0, -25, 50);
+    camera.lookAt(0, -25, 0);
 
     // Renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
+    // CSS2D Renderer for text labels
+    const labelRenderer = new CSS2DRenderer();
+    labelRenderer.setSize(window.innerWidth, window.innerHeight);
+    labelRenderer.domElement.style.position = 'absolute';
+    labelRenderer.domElement.style.top = '0px';
+    labelRenderer.domElement.style.pointerEvents = 'none';
+    document.body.appendChild(labelRenderer.domElement);
+
     // Controls
     const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableRotate = false;
     controls.enableDamping = true;
 
-    // Axes Helper
-    // X = red, Y = green, Z = blue
-    const axesHelper = new THREE.AxesHelper(20);
-    scene.add(axesHelper);
+    // Line material
+    const lineMaterial = new THREE.LineBasicMaterial({ color: 0x333333 });
 
-    // Grid on XZ plane (horizontal ground plane)
-    const gridHelper = new THREE.GridHelper(40, 40, 0x444444, 0x222222);
-    scene.add(gridHelper);
+    // Helper function to create a circle outline
+    function createCircle(radius, y = 0, segments = 64) {
+      const points = [];
+      for (let i = 0; i <= segments; i++) {
+        const theta = (i / segments) * Math.PI * 2;
+        points.push(new THREE.Vector3(
+          Math.cos(theta) * radius,
+          Math.sin(theta) * radius + y,
+          0
+        ));
+      }
+      const geometry = new THREE.BufferGeometry().setFromPoints(points);
+      return new THREE.Line(geometry, lineMaterial);
+    }
 
-    // Axis labels (simple spheres at axis ends)
-    const labelGeometry = new THREE.SphereGeometry(0.5, 16, 16);
+    // Helper function to create a rectangle outline
+    function createRectangle(width, height, y = 0) {
+      const points = [
+        new THREE.Vector3(-width / 2, y + height / 2, 0),
+        new THREE.Vector3(width / 2, y + height / 2, 0),
+        new THREE.Vector3(width / 2, y - height / 2, 0),
+        new THREE.Vector3(-width / 2, y - height / 2, 0),
+        new THREE.Vector3(-width / 2, y + height / 2, 0),
+      ];
+      const geometry = new THREE.BufferGeometry().setFromPoints(points);
+      return new THREE.Line(geometry, lineMaterial);
+    }
 
-    const xLabel = new THREE.Mesh(
-      labelGeometry,
-      new THREE.MeshBasicMaterial({ color: 0xff0000 })
-    );
-    xLabel.position.set(22, 0, 0);
-    scene.add(xLabel);
+    // Helper function to create horizontal line
+    function createHLine(x1, x2, y) {
+      const points = [
+        new THREE.Vector3(x1, y, 0),
+        new THREE.Vector3(x2, y, 0),
+      ];
+      const geometry = new THREE.BufferGeometry().setFromPoints(points);
+      return new THREE.Line(geometry, lineMaterial);
+    }
 
-    const yLabel = new THREE.Mesh(
-      labelGeometry,
-      new THREE.MeshBasicMaterial({ color: 0x00ff00 })
-    );
-    yLabel.position.set(0, 22, 0);
-    scene.add(yLabel);
+    // Helper function to create vertical line
+    function createVLine(x, y1, y2) {
+      const points = [
+        new THREE.Vector3(x, y1, 0),
+        new THREE.Vector3(x, y2, 0),
+      ];
+      const geometry = new THREE.BufferGeometry().setFromPoints(points);
+      return new THREE.Line(geometry, lineMaterial);
+    }
 
-    const zLabel = new THREE.Mesh(
-      labelGeometry,
-      new THREE.MeshBasicMaterial({ color: 0x0000ff })
-    );
-    zLabel.position.set(0, 0, 22);
-    scene.add(zLabel);
+    // Helper function to create text label
+    function createLabel(text, x, y, fontSize = '12px', fontWeight = 'normal', textAlign = 'left') {
+      const div = document.createElement('div');
+      div.textContent = text;
+      div.style.color = '#333';
+      div.style.fontFamily = 'Georgia, serif';
+      div.style.fontSize = fontSize;
+      div.style.fontWeight = fontWeight;
+      div.style.textAlign = textAlign;
+      if (textAlign === 'center') {
+        div.style.transform = 'translateX(-50%)';
+      }
+      const label = new CSS2DObject(div);
+      label.position.set(x, y, 0);
+      return label;
+    }
+
+    // ========================================
+    // UNIVERSAL MATHEMATICS - Title
+    // ========================================
+    scene.add(createLabel('UNIVERSAL MATHEMATICS', 0, 20, '14px', 'bold', 'center'));
+
+    // ========================================
+    // ALGORITHMIC VERSION (building up)
+    // ========================================
+    const algoOffsetX = 0; // Centered
+
+    // Helper to create circle at x,y position
+    function createCircleAt(x, y, radius, segments = 64) {
+      const points = [];
+      for (let i = 0; i <= segments; i++) {
+        const theta = (i / segments) * Math.PI * 2;
+        points.push(new THREE.Vector3(
+          x + Math.cos(theta) * radius,
+          y + Math.sin(theta) * radius,
+          0
+        ));
+      }
+      const geometry = new THREE.BufferGeometry().setFromPoints(points);
+      return new THREE.Line(geometry, lineMaterial);
+    }
+
+    // Algorithmic parameters
+    const baseRadius = 1.5;
+    const algoY = 12; // Position for first circle
+    const circleX = algoOffsetX + 8; // Offset circles to the right for text
+
+    // Zone 0: Single circle
+    scene.add(createCircleAt(circleX, algoY, baseRadius));
+
+    // Left rectangle (same height as circle, width 1 unit)
+    const leftRectWidth = 1;
+    const leftRectX = algoOffsetX - 12;
+    const rectPoints = [
+      new THREE.Vector3(leftRectX - leftRectWidth / 2, algoY + baseRadius, 0),
+      new THREE.Vector3(leftRectX + leftRectWidth / 2, algoY + baseRadius, 0),
+      new THREE.Vector3(leftRectX + leftRectWidth / 2, algoY - baseRadius, 0),
+      new THREE.Vector3(leftRectX - leftRectWidth / 2, algoY - baseRadius, 0),
+      new THREE.Vector3(leftRectX - leftRectWidth / 2, algoY + baseRadius, 0),
+    ];
+    scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(rectPoints), lineMaterial));
+
+    // Dashed line material
+    const dashedMaterial = new THREE.LineDashedMaterial({
+      color: 0x333333,
+      dashSize: 0.5,
+      gapSize: 0.3,
+    });
+
+    // Dashed line from top right of rectangle to center top of circle
+    const topLinePoints = [
+      new THREE.Vector3(leftRectX + leftRectWidth / 2, algoY + baseRadius, 0),
+      new THREE.Vector3(circleX, algoY + baseRadius, 0),
+    ];
+    const topLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints(topLinePoints), dashedMaterial);
+    topLine.computeLineDistances();
+    scene.add(topLine);
+
+    // Dashed line from bottom right of rectangle to center bottom of circle
+    const bottomLinePoints = [
+      new THREE.Vector3(leftRectX + leftRectWidth / 2, algoY - baseRadius, 0),
+      new THREE.Vector3(circleX, algoY - baseRadius, 0),
+    ];
+    const bottomLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints(bottomLinePoints), dashedMaterial);
+    bottomLine.computeLineDistances();
+    scene.add(bottomLine);
+
+    // Left number: 1
+    scene.add(createLabel('1', leftRectX, algoY, '11px'));
+
+    // Zone label (between left number and circle)
+    scene.add(createLabel('Fourth Pressure Zone', algoOffsetX - 8, algoY, '10px'));
+
+    // Right number: 1
+    scene.add(createLabel('1', circleX + baseRadius + 2, algoY, '11px'));
+
+    // ========================================
+    // SECOND CIRCLE (Zone 1) - twice the size
+    // ========================================
+    const secondRadius = baseRadius * 2;
+    // Position so top of second circle touches bottom of base circle
+    const secondY = algoY - baseRadius - secondRadius;
+
+    // Outer circle (twice the size)
+    scene.add(createCircleAt(circleX, secondY, secondRadius));
+
+    // Two inner circles stacked (same size as base circle)
+    // Top inner circle: centered at top half of second circle
+    const innerTopY = secondY + baseRadius;
+    scene.add(createCircleAt(circleX, innerTopY, baseRadius));
+
+    // Bottom inner circle: centered at bottom half of second circle
+    const innerBottomY = secondY - baseRadius;
+    scene.add(createCircleAt(circleX, innerBottomY, baseRadius));
+
+    // Two more base-sized circles side by side at vertical center
+    // Left circle: right edge aligns to vertical center (x = circleX)
+    scene.add(createCircleAt(circleX - baseRadius, secondY, baseRadius));
+
+    // Right circle: left edge aligns to vertical center (x = circleX)
+    scene.add(createCircleAt(circleX + baseRadius, secondY, baseRadius));
+
+    // Left rectangle for zone 2 (1.5 units wide, same height as second circle)
+    const leftRect2Width = 1.5;
+    const rect2Points = [
+      new THREE.Vector3(leftRectX - leftRect2Width / 2, secondY + secondRadius, 0),
+      new THREE.Vector3(leftRectX + leftRect2Width / 2, secondY + secondRadius, 0),
+      new THREE.Vector3(leftRectX + leftRect2Width / 2, secondY - secondRadius, 0),
+      new THREE.Vector3(leftRectX - leftRect2Width / 2, secondY - secondRadius, 0),
+      new THREE.Vector3(leftRectX - leftRect2Width / 2, secondY + secondRadius, 0),
+    ];
+    scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(rect2Points), lineMaterial));
+
+    // Dashed line from top right of rectangle to center top of second circle
+    const topLine2Points = [
+      new THREE.Vector3(leftRectX + leftRect2Width / 2, secondY + secondRadius, 0),
+      new THREE.Vector3(circleX, secondY + secondRadius, 0),
+    ];
+    // const topLine2 = new THREE.Line(new THREE.BufferGeometry().setFromPoints(topLine2Points), dashedMaterial);
+    // topLine2.computeLineDistances();
+    // scene.add(topLine2);
+
+    // Dashed line from bottom right of rectangle to center bottom of second circle
+    const bottomLine2Points = [
+      new THREE.Vector3(leftRectX + leftRect2Width / 2, secondY - secondRadius, 0),
+      new THREE.Vector3(circleX, secondY - secondRadius, 0),
+    ];
+    const bottomLine2 = new THREE.Line(new THREE.BufferGeometry().setFromPoints(bottomLine2Points), dashedMaterial);
+    bottomLine2.computeLineDistances();
+    scene.add(bottomLine2);
+
+    // Left number: 2
+    scene.add(createLabel('2', leftRectX, secondY, '11px'));
+
+    // Zone label
+    scene.add(createLabel('Third Pressure Zone', algoOffsetX - 8, secondY, '10px'));
+
+    // Right number: 4
+    scene.add(createLabel('4', circleX + secondRadius + 2, secondY, '11px'));
+
+    // ========================================
+    // THIRD CIRCLE (Zone 2 - Second Pressure Zone) - twice the size of zone 1
+    // ========================================
+    const thirdRadius = secondRadius * 2;
+    // Position so top of third circle touches bottom of second circle
+    const thirdY = secondY - secondRadius - thirdRadius;
+
+    // Outer circle (twice the size of second)
+    scene.add(createCircleAt(circleX, thirdY, thirdRadius));
+
+    // Two inner circles stacked (same size as second circle)
+    // Top inner circle: centered at top half of third circle
+    const inner2TopY = thirdY + secondRadius;
+    scene.add(createCircleAt(circleX, inner2TopY, secondRadius));
+
+    // Bottom inner circle: centered at bottom half of third circle
+    const inner2BottomY = thirdY - secondRadius;
+    scene.add(createCircleAt(circleX, inner2BottomY, secondRadius));
+
+    // Two more second-sized circles side by side at vertical center
+    // Left circle: right edge aligns to vertical center
+    scene.add(createCircleAt(circleX - secondRadius, thirdY, secondRadius));
+
+    // Right circle: left edge aligns to vertical center
+    scene.add(createCircleAt(circleX + secondRadius, thirdY, secondRadius));
+
+    // Now fill each of the 4 inner circles with base circles (like zone 1 pattern)
+    // Top inner circle - add 4 base circles
+    scene.add(createCircleAt(circleX, inner2TopY + baseRadius, baseRadius));
+    scene.add(createCircleAt(circleX, inner2TopY - baseRadius, baseRadius));
+    scene.add(createCircleAt(circleX - baseRadius, inner2TopY, baseRadius));
+    scene.add(createCircleAt(circleX + baseRadius, inner2TopY, baseRadius));
+
+    // Bottom inner circle - add 4 base circles
+    scene.add(createCircleAt(circleX, inner2BottomY + baseRadius, baseRadius));
+    scene.add(createCircleAt(circleX, inner2BottomY - baseRadius, baseRadius));
+    scene.add(createCircleAt(circleX - baseRadius, inner2BottomY, baseRadius));
+    scene.add(createCircleAt(circleX + baseRadius, inner2BottomY, baseRadius));
+
+    // Left inner circle - add 4 base circles
+    const leftInnerX = circleX - secondRadius;
+    scene.add(createCircleAt(leftInnerX, thirdY + baseRadius, baseRadius));
+    scene.add(createCircleAt(leftInnerX, thirdY - baseRadius, baseRadius));
+    scene.add(createCircleAt(leftInnerX - baseRadius, thirdY, baseRadius));
+    scene.add(createCircleAt(leftInnerX + baseRadius, thirdY, baseRadius));
+
+    // Right inner circle - add 4 base circles
+    const rightInnerX = circleX + secondRadius;
+    scene.add(createCircleAt(rightInnerX, thirdY + baseRadius, baseRadius));
+    scene.add(createCircleAt(rightInnerX, thirdY - baseRadius, baseRadius));
+    scene.add(createCircleAt(rightInnerX - baseRadius, thirdY, baseRadius));
+    scene.add(createCircleAt(rightInnerX + baseRadius, thirdY, baseRadius));
+
+    // Left rectangle for zone 3 (2 units wide, same height as third circle)
+    const leftRect3Width = 2;
+    const rect3Points = [
+      new THREE.Vector3(leftRectX - leftRect3Width / 2, thirdY + thirdRadius, 0),
+      new THREE.Vector3(leftRectX + leftRect3Width / 2, thirdY + thirdRadius, 0),
+      new THREE.Vector3(leftRectX + leftRect3Width / 2, thirdY - thirdRadius, 0),
+      new THREE.Vector3(leftRectX - leftRect3Width / 2, thirdY - thirdRadius, 0),
+      new THREE.Vector3(leftRectX - leftRect3Width / 2, thirdY + thirdRadius, 0),
+    ];
+    scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(rect3Points), lineMaterial));
+
+    // Dashed line from top right of rectangle to center top of third circle
+    const topLine3Points = [
+      new THREE.Vector3(leftRectX + leftRect3Width / 2, thirdY + thirdRadius, 0),
+      new THREE.Vector3(circleX, thirdY + thirdRadius, 0),
+    ];
+    // const topLine3 = new THREE.Line(new THREE.BufferGeometry().setFromPoints(topLine3Points), dashedMaterial);
+    // topLine3.computeLineDistances();
+    // scene.add(topLine3);
+
+    // Dashed line from bottom right of rectangle to center bottom of third circle
+    const bottomLine3Points = [
+      new THREE.Vector3(leftRectX + leftRect3Width / 2, thirdY - thirdRadius, 0),
+      new THREE.Vector3(circleX, thirdY - thirdRadius, 0),
+    ];
+    const bottomLine3 = new THREE.Line(new THREE.BufferGeometry().setFromPoints(bottomLine3Points), dashedMaterial);
+    bottomLine3.computeLineDistances();
+    scene.add(bottomLine3);
+
+    // Left number: 4
+    scene.add(createLabel('4', leftRectX, thirdY, '11px'));
+
+    // Zone label
+    scene.add(createLabel('Second Pressure Zone', algoOffsetX - 8, thirdY, '10px'));
+
+    // Right number: 16
+    scene.add(createLabel('16', circleX + thirdRadius + 2, thirdY, '11px'));
+
+    // ========================================
+    // FOURTH CIRCLE (Zone 3 - First Pressure Zone) - twice the size of zone 2
+    // ========================================
+    const fourthRadius = thirdRadius * 2;
+    // Position so top of fourth circle touches bottom of third circle
+    const fourthY = thirdY - thirdRadius - fourthRadius;
+
+    // Outer circle (twice the size of third)
+    scene.add(createCircleAt(circleX, fourthY, fourthRadius));
+
+    // Two inner circles stacked (same size as third circle)
+    const inner3TopY = fourthY + thirdRadius;
+    scene.add(createCircleAt(circleX, inner3TopY, thirdRadius));
+
+    const inner3BottomY = fourthY - thirdRadius;
+    scene.add(createCircleAt(circleX, inner3BottomY, thirdRadius));
+
+    // Two more third-sized circles side by side at vertical center
+    scene.add(createCircleAt(circleX - thirdRadius, fourthY, thirdRadius));
+    scene.add(createCircleAt(circleX + thirdRadius, fourthY, thirdRadius));
+
+    // Helper function to draw the zone 2 pattern (4 second-sized circles with base circles inside)
+    function drawZone2Pattern(centerX, centerY) {
+      // 4 second-sized circles in cross pattern
+      const positions = [
+        { x: centerX, y: centerY + secondRadius },
+        { x: centerX, y: centerY - secondRadius },
+        { x: centerX - secondRadius, y: centerY },
+        { x: centerX + secondRadius, y: centerY },
+      ];
+
+      positions.forEach(pos => {
+        scene.add(createCircleAt(pos.x, pos.y, secondRadius));
+        // 4 base circles inside each second-sized circle
+        scene.add(createCircleAt(pos.x, pos.y + baseRadius, baseRadius));
+        scene.add(createCircleAt(pos.x, pos.y - baseRadius, baseRadius));
+        scene.add(createCircleAt(pos.x - baseRadius, pos.y, baseRadius));
+        scene.add(createCircleAt(pos.x + baseRadius, pos.y, baseRadius));
+      });
+    }
+
+    // Draw zone 2 pattern in each of the 4 third-sized circles
+    drawZone2Pattern(circleX, inner3TopY);
+    drawZone2Pattern(circleX, inner3BottomY);
+    drawZone2Pattern(circleX - thirdRadius, fourthY);
+    drawZone2Pattern(circleX + thirdRadius, fourthY);
+
+    // Left rectangle for zone 4 (2.5 units wide, same height as fourth circle)
+    const leftRect4Width = 2.5;
+    const rect4Points = [
+      new THREE.Vector3(leftRectX - leftRect4Width / 2, fourthY + fourthRadius, 0),
+      new THREE.Vector3(leftRectX + leftRect4Width / 2, fourthY + fourthRadius, 0),
+      new THREE.Vector3(leftRectX + leftRect4Width / 2, fourthY - fourthRadius, 0),
+      new THREE.Vector3(leftRectX - leftRect4Width / 2, fourthY - fourthRadius, 0),
+      new THREE.Vector3(leftRectX - leftRect4Width / 2, fourthY + fourthRadius, 0),
+    ];
+    scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(rect4Points), lineMaterial));
+
+    // Dashed line from top right of rectangle to center top of fourth circle
+    const topLine4Points = [
+      new THREE.Vector3(leftRectX + leftRect4Width / 2, fourthY + fourthRadius, 0),
+      new THREE.Vector3(circleX, fourthY + fourthRadius, 0),
+    ];
+    // const topLine4 = new THREE.Line(new THREE.BufferGeometry().setFromPoints(topLine4Points), dashedMaterial);
+    // topLine4.computeLineDistances();
+    // scene.add(topLine4);
+
+    // Dashed line from bottom right of rectangle to center bottom of fourth circle
+    const bottomLine4Points = [
+      new THREE.Vector3(leftRectX + leftRect4Width / 2, fourthY - fourthRadius, 0),
+      new THREE.Vector3(circleX, fourthY - fourthRadius, 0),
+    ];
+    const bottomLine4 = new THREE.Line(new THREE.BufferGeometry().setFromPoints(bottomLine4Points), dashedMaterial);
+    bottomLine4.computeLineDistances();
+    scene.add(bottomLine4);
+
+    // Left number: 8
+    scene.add(createLabel('8', leftRectX, fourthY, '11px'));
+
+    // Zone label
+    scene.add(createLabel('First Pressure Zone', algoOffsetX - 8, fourthY, '10px'));
+
+    // Right number: 64
+    scene.add(createLabel('64', circleX + fourthRadius + 2, fourthY, '11px'));
+
+    // Bottom title
+    const bottomTextY = fourthY - fourthRadius - 5;
+    scene.add(createLabel('THE FORMULA OF THE LOCKED POTENTIALS IN UNIVERSAL RATIOS', 0, bottomTextY, '11px', 'bold', 'center'));
 
     // Animation loop
     function animate() {
       requestAnimationFrame(animate);
       controls.update();
       renderer.render(scene, camera);
+      labelRenderer.render(scene, camera);
     }
 
     animate();
 
     // Handle window resize
     window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
+      const aspect = window.innerWidth / window.innerHeight;
+      camera.left = -frustumHeight * aspect / 2;
+      camera.right = frustumHeight * aspect / 2;
+      camera.top = frustumHeight / 2;
+      camera.bottom = -frustumHeight / 2;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
+      labelRenderer.setSize(window.innerWidth, window.innerHeight);
     });
   </script>
 </body>
