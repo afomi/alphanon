@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Universal Mathematics</title>
+  <link
+    rel="stylesheet"
+    href="./assets/css/nav.css">
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    .overlay {
+      color: #999;
+      font-family: sans-serif;
+      position: absolute;
+      z-index: 10;
+      padding: 0.5rem 1rem;
+    }
+
+    .bottom-center {
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <script type="module">
+    import { injectNav } from './assets/js/nav.js';
+    injectNav();
+  </script>
+  <a
+    href="https://github.com/afomi/alphanon"
+    class="overlay bottom-center"
+    target="_blank">
+    GitHub
+  </a>
+
+  <script type="module">
+    import * as THREE from 'https://esm.sh/three@0.176.0/build/three.module.js';
+    import { OrbitControls } from 'https://esm.sh/three@0.176.0/examples/jsm/controls/OrbitControls.js';
+
+    // Standard 3D Layout:
+    // X = horizontal (left/right)
+    // Y = vertical (up/down)
+    // Z = depth (front/back)
+
+    // Scene setup
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x111111);
+
+    // Camera
+    const camera = new THREE.PerspectiveCamera(
+      75,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      1000
+    );
+    camera.position.set(30, 20, 30);
+    camera.lookAt(0, 0, 0);
+
+    // Renderer
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Controls
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+
+    // Axes Helper
+    // X = red, Y = green, Z = blue
+    const axesHelper = new THREE.AxesHelper(20);
+    scene.add(axesHelper);
+
+    // Grid on XZ plane (horizontal ground plane)
+    const gridHelper = new THREE.GridHelper(40, 40, 0x444444, 0x222222);
+    scene.add(gridHelper);
+
+    // Axis labels (simple spheres at axis ends)
+    const labelGeometry = new THREE.SphereGeometry(0.5, 16, 16);
+
+    const xLabel = new THREE.Mesh(
+      labelGeometry,
+      new THREE.MeshBasicMaterial({ color: 0xff0000 })
+    );
+    xLabel.position.set(22, 0, 0);
+    scene.add(xLabel);
+
+    const yLabel = new THREE.Mesh(
+      labelGeometry,
+      new THREE.MeshBasicMaterial({ color: 0x00ff00 })
+    );
+    yLabel.position.set(0, 22, 0);
+    scene.add(yLabel);
+
+    const zLabel = new THREE.Mesh(
+      labelGeometry,
+      new THREE.MeshBasicMaterial({ color: 0x0000ff })
+    );
+    zLabel.position.set(0, 0, 22);
+    scene.add(zLabel);
+
+    // Animation loop
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    // Handle window resize
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+
+</html>

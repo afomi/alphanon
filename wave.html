@@ -3,7 +3,10 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Wave 👋</title>
+  <title>Wave</title>
+  <link
+    rel="stylesheet"
+    href="./assets/css/nav.css">
   <style>
     body {
       margin: 0;
@@ -22,15 +25,6 @@
       height: 100%;
       z-index: 0;
     }
-    .absolute {
-      color: #999;
-      font-family: sans-serif;
-      position: absolute;
-      z-index: 10;
-      top: 1rem;
-      left: 1rem;
-      padding: 0.5rem 1rem;
-    }
     .bottom-center {
       color: #999;
       font-family: sans-serif;
@@ -46,24 +40,22 @@
 </head>
 
 <body>
+  <script type="module">
+    import { injectNav } from './assets/js/nav.js';
+    injectNav();
+  </script>
   <div
     id="three-js-css-container"
-    class="bg-blue-200 w-full h-full fixed inset-0 relative"
-  >
+    class="bg-blue-200 w-full h-full fixed inset-0 relative">
     <canvas
       class=""
       id="alphanonCanvas"
       width="1200"
       height="800"></canvas>
-    <a href="../"
-      class="absolute">
-      ← Home
-    </a>
     <a
       href="https://github.com/afomi/alphanon"
       class="bottom-center"
-      target="_blank"
-    >
+      target="_blank">
       GitHub
     </a>
   </div>

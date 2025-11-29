@@ -1,65 +1,112 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title>
-      Alphanon
-    </title>
-    <style>
-      body {
-        margin: 0;
-        overflow: hidden;
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Sine Wave Expansion</title>
+  <link
+    rel="stylesheet"
+    href="./assets/css/nav.css">
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+  <script type="module">
+    import { injectNav } from './assets/js/nav.js';
+    injectNav();
+  </script>
+  <script type="module">
+    import * as THREE from './assets/js/three.js';
+    import { OrbitControls } from './assets/js/orbitcontrols.js';
+
+    // Three.js setup
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 50;
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+
+
+
+
+    // App setup
+    const lineCount = 10;
+    const pointsPerLine = 200;
+    const baseAmplitude = 2;
+    const baseFrequency = 0.2;
+
+    const lines = [];
+
+    for (let i = 0; i < lineCount; i++) {
+      const scale = 1 + 0.1 * i;
+      const geometry = new THREE.BufferGeometry();
+      const positions = [];
+
+      for (let j = 0; j < pointsPerLine; j++) {
+        const x = j - pointsPerLine / 2;
+        const y = Math.sin(x * baseFrequency) * baseAmplitude * scale;
+        const z = i * 2; // offset in Z to show multiple lines
+        positions.push(x, y, z);
       }
-    </style>
-    <script type="module">
-      import * as THREE from './assets/js/three.js';
-      import { OrbitControls } from './assets/js/orbitcontrols.js';
 
-      // Set up the Three.js scene
-      var scene = new THREE.Scene();
-      var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-      var renderer = new THREE.WebGLRenderer();
-      renderer.setSize( window.innerWidth, window.innerHeight );
+      geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
 
-      var canvas = document.getElementById('threejs-canvas');
-      canvas.appendChild( renderer.domElement );
+      const material = new THREE.LineBasicMaterial({ color: new THREE.Color(`hsl(${i * 36}, 100%, 50%)`) });
+      const line = new THREE.Line(geometry, material);
+      lines.push({ line, scale });
+      scene.add(line);
+    }
 
-      const controls = new OrbitControls( camera, renderer.domElement );
+    function animate() {
+      requestAnimationFrame(animate);
 
-      camera.position.set( 0, 0, 20 );
-      // camera.lookAt( 0, 0, 0 );
+      // Animate wave motion
+      const time = performance.now() * 0.001;
+      lines.forEach(({ line, scale }, i) => {
+        const positions = line.geometry.attributes.position.array;
+        for (let j = 0; j < pointsPerLine; j++) {
+          const x = j - pointsPerLine / 2;
+          const y = Math.sin(x * baseFrequency + time) * baseAmplitude * scale;
+          // positions[j * 3 + 0] = y; // update x only
+          // positions[j * 3 + 1] = y; // update y only
+          // positions[j * 3 + 2] = y; // update z only
+          // positions[j * 3 + 4] = y; // update z only
+          // positions[j * 3 + 5] = y; // update z only
+          positions[j * 3 + 6] = y; // update z only
+        }
+        line.geometry.attributes.position.needsUpdate = true;
+      });
 
-      // Create the E8 mesh geometry
-      var geometry = new THREE.CircleGeometry(10, 36);
-      // Add vertices and faces to the geometry to define the E8 shape
+      renderer.render(scene, camera);
+    }
 
-      // Create the E8 mesh material
-      var material = new THREE.MeshBasicMaterial( { color: 0x73b3e7 } );
+    animate();
+  </script>
+  <script>
+    // const scene = new THREE.Scene();
+    // const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    // camera.position.z = 50;
 
-      // Create the E8 mesh object
-      var mesh = new THREE.Mesh( geometry, material );
+    // const renderer = new THREE.WebGLRenderer({ antialias: true });
+    // renderer.setSize(window.innerWidth, window.innerHeight);
+    // document.body.appendChild(renderer.domElement);
 
-      // Add the mesh object to the scene
-      scene.add( mesh );
-      scene.background =  new THREE.Color( 0xf0f0f0 );
-      // Use the Three.js animation loop to update and render the scene
-      function animate() {
-        requestAnimationFrame( animate );
-        // Update the mesh position or rotation if desired
-        	controls.update();
 
-        renderer.render( scene, camera );
-      }
-      animate();
-    </script>
-  </head>
-  <body>
-    <h1>
-      <a href="./">Alphanon</a>
-    </h1>
-    <p>
-      The first element, according to Walter Russell's periodic table.
-    </p>
-    <div id="threejs-canvas"></div>
-  </body>
+
+  </script>
+</body>
+
 </html>

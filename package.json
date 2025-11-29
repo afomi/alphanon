@@ -1,0 +1,16 @@
+{
+  "name": "alphanon",
+  "version": "1.0.0",
+  "description": "Walter Russell discussed elements prior to hydrogren. He called the first element, Alphanon.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dat.gui": "^0.7.9",
+    "tailwindcss": "^4.1.17",
+    "three": "^0.181.0"
+  }
+}
