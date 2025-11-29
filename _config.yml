@@ -1,0 +1,13 @@
+title: Alphanon
+description: Walter Russell discussed elements prior to hydrogen. He called the first element, Alphanon.
+baseurl: ""
+url: ""
+
+exclude:
+  - node_modules
+  - package.json
+  - package-lock.json
+  - Gemfile
+  - Gemfile.lock
+  - CLAUDE.md
+  - README.md

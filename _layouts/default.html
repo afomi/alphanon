@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {% include head.html %}
+  {% if page.extra_css %}
+  <style>
+    {{ page.extra_css }}
+  </style>
+  {% endif %}
+</head>
+
+<body>
+  <script type="module">
+    import { injectNav } from '{{ "/assets/js/nav.js" | relative_url }}';
+    injectNav();
+  </script>
+  {{ content }}
+</body>
+
+</html>

@@ -1,39 +1,24 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title>
-      Alphanon
-    </title>
-    <link
-      rel="stylesheet"
-      href="./assets/css/nav.css">
-    <style>
-      body {
-        margin: 0;
-        font-family: system-ui, sans-serif;
-      }
-      main {
-        padding: 1rem;
-        padding-top: 4rem;
-      }
-    </style>
-  </head>
-  <body>
-    <script type="module">
-      import { injectNav } from './assets/js/nav.js';
-      injectNav();
-    </script>
-    <main>
-      <h1>
-        Alphanon
-      </h1>
-      <p>
-        The first element, according to Walter Russell's periodic table.
-      </p>
-      <img
-        src="./images/walter-russell-periodic-table.jpg"
-        alt="">
-    </main>
-  </body>
-</html>
+---
+title: Alphanon
+layout: default
+extra_css: |
+  body {
+    margin: 0;
+    font-family: system-ui, sans-serif;
+  }
+  main {
+    padding: 1rem;
+    padding-top: 4rem;
+  }
+---
+<main>
+  <h1>
+    Alphanon
+  </h1>
+  <p>
+    The first element, according to Walter Russell's periodic table.
+  </p>
+  <img
+    src="./images/walter-russell-periodic-table.jpg"
+    alt="">
+</main>

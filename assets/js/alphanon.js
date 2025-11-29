@@ -1,7 +1,7 @@
-import * as THREE from 'https://esm.sh/three@0.176.0/build/three.module.js';
-import { OrbitControls } from 'https://esm.sh/three@0.176.0/examples/jsm/controls/OrbitControls.js';
-import { CSS2DRenderer, CSS2DObject } from 'https://esm.sh/three@0.176.0/examples/jsm/renderers/CSS2DRenderer.js';
-import GUI from 'https://esm.sh/dat.gui';
+import * as THREE from './three.js';
+import { OrbitControls } from './orbitcontrols.js';
+import { CSS2DRenderer, CSS2DObject } from './css2drenderer.js';
+import GUI from './dat.gui.module.js';
 
 import { periodicTableElements, alphanonCanvas, alphanonRenderer } from "./alphanon/canvas.js"
 

@@ -1,44 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8">
-  <title>Universal Mathematics</title>
-  <link
-    rel="stylesheet"
-    href="./assets/css/nav.css">
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-    }
-
-    canvas {
-      display: block;
-    }
-
-    .overlay {
-      color: #999;
-      font-family: sans-serif;
-      position: absolute;
-      z-index: 10;
-      padding: 0.5rem 1rem;
-    }
-
-    .bottom-center {
-      bottom: 2rem;
-      left: 50%;
-      transform: translateX(-50%);
-      text-align: center;
-    }
-  </style>
-</head>
-
-<body>
-  <script type="module">
-    import { injectNav } from './assets/js/nav.js';
-    injectNav();
-  </script>
+---
+title: Universal Mathematics
+layout: default
+extra_css: |
+  body {
+    margin: 0;
+    overflow: hidden;
+  }
+  canvas {
+    display: block;
+  }
+  .overlay {
+    color: #999;
+    font-family: sans-serif;
+    position: absolute;
+    z-index: 10;
+    padding: 0.5rem 1rem;
+  }
+  .bottom-center {
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+  }
+---
   <a
     href="https://github.com/afomi/alphanon"
     class="overlay bottom-center"
@@ -47,9 +31,9 @@
   </a>
 
   <script type="module">
-    import * as THREE from 'https://esm.sh/three@0.176.0/build/three.module.js';
-    import { OrbitControls } from 'https://esm.sh/three@0.176.0/examples/jsm/controls/OrbitControls.js';
-    import { CSS2DRenderer, CSS2DObject } from 'https://esm.sh/three@0.176.0/examples/jsm/renderers/CSS2DRenderer.js';
+    import * as THREE from './assets/js/three.js';
+    import { OrbitControls } from './assets/js/orbitcontrols.js';
+    import { CSS2DRenderer, CSS2DObject } from './assets/js/css2drenderer.js';
 
     // Standard 3D Layout:
     // X = horizontal (left/right)
@@ -506,6 +490,3 @@
       labelRenderer.setSize(window.innerWidth, window.innerHeight);
     });
   </script>
-</body>
-
-</html>

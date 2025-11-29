@@ -28,3 +28,7 @@
   font-weight: 600;
   margin-right: 1rem;
 }
+
+#site-nav a.github {
+  margin-left: auto;
+}

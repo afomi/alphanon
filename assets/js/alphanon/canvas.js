@@ -1,4 +1,4 @@
-import * as THREE from 'https://esm.sh/three@0.176.0/build/three.module.js';
+import * as THREE from '../three.js';
 
 const width = window.innerWidth;
 const height = window.innerHeight;
