@@ -3,8 +3,17 @@ import * as THREE from '../three.js';
 const width = window.innerWidth;
 const height = window.innerHeight;
 
+// Element data transcribed from Walter Russell, *The Universal One* (1926/1927).
+// See docs/ELEMENT_DATA.md for full provenance, row-length explanation,
+// and notes on pre-hydrogen "tonal" names (Alphanon, Hydron, Luminon, etc.).
+// The first 41 rows use 7 fields (last = octave); later rows use 6 fields.
+// This structure is historical and has not been normalized.
+//
 // ["abbreviation", "element name", "weight", 1, 1, octave],
 var periodicTableElements = [
+  // --- Pre-hydrogen / "beginning" elements (Russell's octave 0–3) ---
+  // These entries are taken directly from Russell's text in *The Universal One*.
+  // They have no modern chemical counterparts. See docs/ELEMENT_DATA.md.
   ["Alphanon", "Alphanon", "10.000", 1, 1, 0],
 
   // Octave 1

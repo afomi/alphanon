@@ -1,0 +1,686 @@
+---
+title: Periodic Table
+layout: default
+extra_css: |
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: #111;
+    color: #fff;
+    font-family: system-ui, -apple-system, sans-serif;
+  }
+  a { color: #8af; }
+  .element {
+    width: 120px;
+    height: 160px;
+    box-shadow: 0 0 12px rgba(0,255,255,0.15);
+    border: 1px solid rgba(127,255,255,0.15);
+    border-radius: 6px;
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+  .element:hover {
+    border-color: rgba(127,255,255,0.6);
+    box-shadow: 0 0 20px rgba(0,255,255,0.4);
+  }
+  .element .number {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    font-size: 10px;
+    opacity: 0.7;
+  }
+  .element .octave-badge {
+    position: absolute;
+    top: 6px;
+    left: 8px;
+    font-size: 9px;
+    background: rgba(255,255,255,0.1);
+    padding: 1px 5px;
+    border-radius: 3px;
+    opacity: 0.7;
+  }
+  .element .symbol {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+  .element .name {
+    font-size: 10px;
+    margin-top: 4px;
+    opacity: 0.8;
+    text-align: center;
+    line-height: 1.2;
+    max-height: 2.4em;
+    overflow: hidden;
+  }
+  .element .weight {
+    font-size: 9px;
+    margin-top: 2px;
+    opacity: 0.5;
+  }
+  .element.russell-only {
+    border-style: dashed;
+    border-color: rgba(180,120,255,0.4);
+    box-shadow: 0 0 12px rgba(180,120,255,0.15);
+  }
+  .element.russell-only:hover {
+    border-color: rgba(180,120,255,0.7);
+    box-shadow: 0 0 20px rgba(180,120,255,0.4);
+  }
+  #menu {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    display: flex;
+    gap: 8px;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(10px);
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  #menu button {
+    background: rgba(255,255,255,0.08);
+    color: #ccc;
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 8px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+  #menu button:hover {
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+  }
+  #menu button.active {
+    background: rgba(0,255,255,0.15);
+    color: #7ff;
+    border-color: rgba(0,255,255,0.4);
+  }
+  #detail-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 380px;
+    height: 100vh;
+    background: rgba(15,15,20,0.95);
+    backdrop-filter: blur(20px);
+    border-left: 1px solid rgba(255,255,255,0.1);
+    z-index: 200;
+    overflow-y: auto;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    padding: 24px;
+    box-sizing: border-box;
+  }
+  #detail-panel.open {
+    transform: translateX(0);
+  }
+  #detail-panel .close-btn {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    background: none;
+    border: none;
+    color: #999;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 4px 8px;
+    line-height: 1;
+  }
+  #detail-panel .close-btn:hover {
+    color: #fff;
+  }
+  #detail-panel .el-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 16px;
+    margin-top: 8px;
+  }
+  #detail-panel .el-symbol {
+    font-size: 48px;
+    font-weight: 700;
+  }
+  #detail-panel .el-name {
+    font-size: 20px;
+    opacity: 0.8;
+  }
+  #detail-panel .el-number {
+    font-size: 14px;
+    opacity: 0.5;
+  }
+  #detail-panel .el-photo {
+    width: 100%;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    background: #222;
+  }
+  #detail-panel .el-photo-caption {
+    font-size: 11px;
+    opacity: 0.5;
+    margin-top: -8px;
+    margin-bottom: 12px;
+    line-height: 1.3;
+  }
+  #detail-panel .spectral-img {
+    width: 100%;
+    height: 40px;
+    object-fit: fill;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    background: #000;
+  }
+  #detail-panel .spectral-label {
+    font-size: 11px;
+    opacity: 0.5;
+    margin-bottom: 16px;
+  }
+  #detail-panel .props-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 16px;
+    font-size: 12px;
+  }
+  #detail-panel .props-table td {
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  #detail-panel .props-table td:first-child {
+    opacity: 0.5;
+    padding-right: 12px;
+    white-space: nowrap;
+  }
+  #detail-panel .el-summary {
+    font-size: 12px;
+    line-height: 1.6;
+    opacity: 0.7;
+    margin-top: 16px;
+  }
+  #detail-panel .russell-note {
+    background: rgba(180,120,255,0.1);
+    border: 1px solid rgba(180,120,255,0.3);
+    border-radius: 6px;
+    padding: 12px;
+    font-size: 12px;
+    line-height: 1.5;
+    margin-top: 12px;
+  }
+---
+<div id="menu">
+  <button
+    id="btn-table"
+    class="active"
+    data-layout="table">
+    Mendeleev
+  </button>
+  <button
+    id="btn-russell"
+    data-layout="russell">
+    Russell
+  </button>
+  <button
+    id="btn-helix"
+    data-layout="helix">
+    Helix
+  </button>
+</div>
+
+<div id="detail-panel">
+  <button class="close-btn">&times;</button>
+  <div id="detail-content"></div>
+</div>
+
+<script type="module">
+  import * as THREE from './assets/js/three.js';
+  import { OrbitControls } from './assets/js/orbitcontrols.js';
+  import { CSS3DRenderer, CSS3DObject } from './assets/js/css3drenderer.js';
+  import TWEEN from './assets/js/tween.module.js';
+  import { periodicTableElements } from './assets/js/alphanon/canvas.js';
+
+  // ── Data ──────────────────────────────────────────────
+  const bowserData = await fetch('./assets/data/periodic-table.json')
+    .then(r => r.json())
+    .then(d => d.elements);
+
+  // Build a lookup by symbol for quick matching
+  const bowserBySymbol = {};
+  for (const el of bowserData) {
+    bowserBySymbol[el.symbol] = el;
+  }
+
+  // ── Category colors ───────────────────────────────────
+  const categoryColors = {
+    'diatomic nonmetal':     'rgba(30, 80, 90, 0.85)',
+    'noble gas':             'rgba(80, 50, 100, 0.85)',
+    'alkali metal':          'rgba(100, 50, 30, 0.85)',
+    'alkaline earth metal':  'rgba(90, 70, 20, 0.85)',
+    'metalloid':             'rgba(40, 80, 60, 0.85)',
+    'polyatomic nonmetal':   'rgba(30, 80, 90, 0.85)',
+    'post-transition metal': 'rgba(50, 70, 80, 0.85)',
+    'transition metal':      'rgba(60, 60, 80, 0.85)',
+    'lanthanide':            'rgba(70, 55, 75, 0.85)',
+    'actinide':              'rgba(75, 45, 55, 0.85)',
+    'unknown, probably transition metal':     'rgba(55, 55, 65, 0.85)',
+    'unknown, probably post-transition metal': 'rgba(55, 55, 65, 0.85)',
+    'unknown, probably metalloid':            'rgba(55, 55, 65, 0.85)',
+    'unknown, predicted to be noble gas':     'rgba(55, 55, 65, 0.85)',
+    'reactive nonmetal':     'rgba(30, 80, 90, 0.85)',
+  };
+  const russellColor = 'rgba(60, 30, 90, 0.85)';
+  const defaultColor = 'rgba(50, 50, 60, 0.85)';
+
+  // ── Scene setup ───────────────────────────────────────
+  const camera = new THREE.PerspectiveCamera(
+    40,
+    window.innerWidth / window.innerHeight,
+    1,
+    10000
+  );
+  camera.position.set(0, 0, 3500);
+
+  const scene = new THREE.Scene();
+
+  const renderer = new CSS3DRenderer();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.body.appendChild(renderer.domElement);
+
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.05;
+  controls.minDistance = 500;
+  controls.maxDistance = 7000;
+
+  // ── Element creation ──────────────────────────────────
+  const objects = [];
+  const targets = { table: [], russell: [], helix: [] };
+
+  // Track which elements are Russell-only (no standard periodic table counterpart)
+  const standardSymbols = new Set(bowserData.map(e => e.symbol));
+
+  let atomicCounter = 0;
+
+  for (let i = 0; i < periodicTableElements.length; i++) {
+    const pte = periodicTableElements[i];
+    const symbol = pte[0];
+    const name = pte[1];
+    const weight = pte[2];
+    const octave = pte[5] !== undefined ? pte[5] : (pte[4] || '');
+    const isRussellOnly = !standardSymbols.has(symbol);
+    const bowser = bowserBySymbol[symbol] || null;
+
+    if (!isRussellOnly) atomicCounter++;
+    const displayNumber = isRussellOnly ? '' : (bowser ? bowser.number : atomicCounter);
+
+    // Create the DOM element
+    const div = document.createElement('div');
+    div.className = 'element' + (isRussellOnly ? ' russell-only' : '');
+
+    const bgColor = isRussellOnly
+      ? russellColor
+      : (bowser && bowser.category ? (categoryColors[bowser.category] || defaultColor) : defaultColor);
+    div.style.backgroundColor = bgColor;
+
+    div.innerHTML = `
+      <div class="number">${displayNumber}</div>
+      <div class="octave-badge">Oct ${octave}</div>
+      <div class="symbol">${symbol}</div>
+      <div class="name">${name}</div>
+      <div class="weight">${weight}</div>
+    `;
+
+    // Store data for detail panel
+    div.dataset.index = i;
+    div.dataset.symbol = symbol;
+    div.dataset.russellOnly = isRussellOnly;
+    div.addEventListener('click', (e) => {
+      e.stopPropagation();
+      showDetail(i);
+    });
+
+    const cssObject = new CSS3DObject(div);
+    cssObject.position.x = Math.random() * 4000 - 2000;
+    cssObject.position.y = Math.random() * 4000 - 2000;
+    cssObject.position.z = Math.random() * 4000 - 2000;
+    scene.add(cssObject);
+    objects.push(cssObject);
+  }
+
+  // ── Layout: Mendeleev Table ───────────────────────────
+  let russellOnlyCount = 0;
+
+  for (let i = 0; i < periodicTableElements.length; i++) {
+    const pte = periodicTableElements[i];
+    const symbol = pte[0];
+    const isRussellOnly = !standardSymbols.has(symbol);
+    const bowser = bowserBySymbol[symbol] || null;
+
+    const target = new THREE.Object3D();
+
+    if (isRussellOnly) {
+      // Stack Russell-only elements in a column to the left
+      const col = Math.floor(russellOnlyCount / 10);
+      const row = russellOnlyCount % 10;
+      target.position.x = -1600 + col * 145;
+      target.position.y = 800 - row * 175;
+      target.position.z = 0;
+      russellOnlyCount++;
+    } else if (bowser) {
+      target.position.x = (bowser.xpos * 140) - 1330;
+      target.position.y = -(bowser.ypos * 180) + 990;
+      target.position.z = 0;
+    } else {
+      target.position.x = -1600;
+      target.position.y = -800;
+      target.position.z = 0;
+    }
+
+    targets.table.push(target);
+  }
+
+  // ── Layout: Russell Wave ──────────────────────────────
+  {
+    const amplitude = 280;   // 7 * 40
+    const sphereHeight = 3200; // 80 * 40
+    const octaves = 10;
+    const totalPoints = periodicTableElements.length;
+    let currentAmp = amplitude;
+
+    for (let i = 0; i < totalPoints; i++) {
+      const t = i / totalPoints;
+      const y = (sphereHeight / 2) - t * sphereHeight;
+      const x = -Math.sin(t * octaves * Math.PI) * currentAmp;
+      const z = Math.cos(t * octaves * Math.PI) * currentAmp;
+      currentAmp = currentAmp * 1.028;
+
+      const target = new THREE.Object3D();
+      target.position.set(x, y, z);
+
+      // Rotate card to face outward from the helix axis
+      const outward = new THREE.Vector3(x, 0, z).normalize();
+      target.lookAt(
+        target.position.x + outward.x * 100,
+        target.position.y,
+        target.position.z + outward.z * 100
+      );
+
+      targets.russell.push(target);
+    }
+  }
+
+  // ── Layout: Helix ─────────────────────────────────────
+  {
+    const totalPoints = periodicTableElements.length;
+    for (let i = 0; i < totalPoints; i++) {
+      const theta = i * 0.175 + Math.PI;
+      const y = -(i * 8) + 600;
+      const x = 900 * Math.sin(theta);
+      const z = 900 * Math.cos(theta);
+
+      const target = new THREE.Object3D();
+      target.position.set(x, y, z);
+
+      // Face outward
+      const outward = new THREE.Vector3(x, 0, z).normalize();
+      target.lookAt(
+        target.position.x + outward.x * 100,
+        target.position.y,
+        target.position.z + outward.z * 100
+      );
+
+      targets.helix.push(target);
+    }
+  }
+
+  // ── Transition animation ──────────────────────────────
+  function transform(targetArray, duration) {
+    TWEEN.removeAll();
+
+    for (let i = 0; i < objects.length; i++) {
+      const object = objects[i];
+      const target = targetArray[i];
+
+      new TWEEN.Tween(object.position)
+        .to({
+          x: target.position.x,
+          y: target.position.y,
+          z: target.position.z
+        }, Math.random() * duration + duration)
+        .easing(TWEEN.Easing.Exponential.InOut)
+        .start();
+
+      new TWEEN.Tween(object.rotation)
+        .to({
+          x: target.rotation.x,
+          y: target.rotation.y,
+          z: target.rotation.z
+        }, Math.random() * duration + duration)
+        .easing(TWEEN.Easing.Exponential.InOut)
+        .start();
+    }
+
+    new TWEEN.Tween({})
+      .to({}, duration * 2)
+      .onUpdate(render)
+      .start();
+  }
+
+  // ── Menu buttons ──────────────────────────────────────
+  const buttons = document.querySelectorAll('#menu button');
+
+  function setActiveButton(layout) {
+    buttons.forEach(b => b.classList.toggle('active', b.dataset.layout === layout));
+  }
+
+  document.getElementById('btn-table').addEventListener('click', () => {
+    transform(targets.table, 2000);
+    setActiveButton('table');
+  });
+
+  document.getElementById('btn-russell').addEventListener('click', () => {
+    transform(targets.russell, 2000);
+    setActiveButton('russell');
+  });
+
+  document.getElementById('btn-helix').addEventListener('click', () => {
+    transform(targets.helix, 2000);
+    setActiveButton('helix');
+  });
+
+  // ── Detail panel ──────────────────────────────────────
+  const detailPanel = document.getElementById('detail-panel');
+  const detailContent = document.getElementById('detail-content');
+  const spectralCache = new Map();
+
+  detailPanel.querySelector('.close-btn').addEventListener('click', () => {
+    detailPanel.classList.remove('open');
+  });
+
+  // Close panel when clicking the background
+  renderer.domElement.addEventListener('click', () => {
+    detailPanel.classList.remove('open');
+  });
+
+  async function resolveSpectralImg(spectralPageUrl) {
+    if (!spectralPageUrl) return null;
+    if (spectralCache.has(spectralPageUrl)) return spectralCache.get(spectralPageUrl);
+
+    try {
+      // Extract filename from URL like "https://en.wikipedia.org/wiki/File:Hydrogen_Spectra.jpg"
+      const match = spectralPageUrl.match(/File:(.+)$/);
+      if (!match) return null;
+
+      const filename = decodeURIComponent(match[1]);
+      const apiUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=File:${encodeURIComponent(filename)}&prop=imageinfo&iiprop=url&iithumbwidth=600&format=json&origin=*`;
+
+      const resp = await fetch(apiUrl);
+      const data = await resp.json();
+      const pages = data.query.pages;
+      const page = pages[Object.keys(pages)[0]];
+
+      if (page.imageinfo && page.imageinfo[0]) {
+        const url = page.imageinfo[0].thumburl || page.imageinfo[0].url;
+        spectralCache.set(spectralPageUrl, url);
+        return url;
+      }
+    } catch (err) {
+      console.warn('Failed to resolve spectral image:', err);
+    }
+
+    spectralCache.set(spectralPageUrl, null);
+    return null;
+  }
+
+  async function showDetail(index) {
+    const pte = periodicTableElements[index];
+    const symbol = pte[0];
+    const name = pte[1];
+    const weight = pte[2];
+    const octave = pte[5] !== undefined ? pte[5] : (pte[4] || '');
+    const isRussellOnly = !standardSymbols.has(symbol);
+    const bowser = bowserBySymbol[symbol] || null;
+
+    let html = '';
+
+    if (isRussellOnly) {
+      html = `
+        <div class="el-header">
+          <span class="el-symbol">${symbol}</span>
+          <span class="el-name">${name}</span>
+        </div>
+        <div class="russell-note">
+          This element is part of Walter Russell's octave model from
+          <em>The Universal One</em> (1926).
+          It has no modern chemical counterpart.
+          <br><br>
+          <strong>Octave:</strong> ${octave}<br>
+          <strong>Russell Weight:</strong> ${weight}
+        </div>
+        <div class="el-summary" style="margin-top: 16px;">
+          Russell proposed a series of pre-hydrogen elements organized into octaves of compression and expansion.
+          These elements represent stages of matter before it condenses into the forms recognized by modern chemistry.
+        </div>
+      `;
+    } else {
+      const num = bowser ? bowser.number : '';
+      const photoUrl = bowser && bowser.image ? bowser.image.url : '';
+      const photoTitle = bowser && bowser.image ? bowser.image.title : '';
+      const photoAttrib = bowser && bowser.image ? bowser.image.attribution : '';
+      const summary = bowser ? bowser.summary : '';
+      const category = bowser ? bowser.category : '';
+      const phase = bowser ? bowser.phase : '';
+      const density = bowser && bowser.density ? bowser.density : '—';
+      const melt = bowser && bowser.melt ? `${bowser.melt} K` : '—';
+      const boil = bowser && bowser.boil ? `${bowser.boil} K` : '—';
+      const electronConfig = bowser ? bowser.electron_configuration_semantic : '';
+      const spectralPageUrl = bowser ? bowser.spectral_img : null;
+
+      html = `
+        <div class="el-header">
+          <span class="el-symbol">${symbol}</span>
+          <span class="el-name">${name}</span>
+          <span class="el-number">#${num}</span>
+        </div>
+      `;
+
+      if (photoUrl) {
+        html += `
+          <img
+            class="el-photo"
+            src="${photoUrl}"
+            alt="${name}"
+            loading="lazy">
+          <div class="el-photo-caption">${photoTitle}</div>
+        `;
+      }
+
+      // Spectral image placeholder — will be resolved async
+      html += `<div id="spectral-container">`;
+      if (spectralPageUrl) {
+        html += `
+          <img
+            class="spectral-img"
+            id="spectral-img"
+            src=""
+            alt="Emission spectrum of ${name}"
+            style="display:none;">
+          <div class="spectral-label">Emission spectrum</div>
+        `;
+      }
+      html += `</div>`;
+
+      html += `
+        <table class="props-table">
+          <tr><td>Category</td><td>${category}</td></tr>
+          <tr><td>Phase</td><td>${phase}</td></tr>
+          <tr><td>Atomic Mass</td><td>${weight}</td></tr>
+          <tr><td>Density</td><td>${density}</td></tr>
+          <tr><td>Melting Point</td><td>${melt}</td></tr>
+          <tr><td>Boiling Point</td><td>${boil}</td></tr>
+          <tr><td>Electron Config</td><td>${electronConfig}</td></tr>
+          <tr><td>Russell Octave</td><td>${octave}</td></tr>
+        </table>
+      `;
+
+      if (summary) {
+        html += `<div class="el-summary">${summary}</div>`;
+      }
+
+      if (photoAttrib) {
+        html += `<div class="el-photo-caption" style="margin-top: 12px;">Image: ${photoAttrib}</div>`;
+      }
+
+      // Resolve spectral image async
+      if (spectralPageUrl) {
+        resolveSpectralImg(spectralPageUrl).then(url => {
+          const img = document.getElementById('spectral-img');
+          if (img && url) {
+            img.src = url;
+            img.style.display = 'block';
+          }
+        });
+      }
+    }
+
+    detailContent.innerHTML = html;
+    detailPanel.classList.add('open');
+  }
+
+  // ── Animation loop ────────────────────────────────────
+  function animate() {
+    requestAnimationFrame(animate);
+    TWEEN.update();
+    controls.update();
+    render();
+  }
+
+  function render() {
+    renderer.render(scene, camera);
+  }
+
+  // ── Resize ────────────────────────────────────────────
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    render();
+  });
+
+  // ── Init ──────────────────────────────────────────────
+  transform(targets.table, 2000);
+  animate();
+</script>

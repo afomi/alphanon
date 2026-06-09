@@ -8,6 +8,7 @@ export function createNav() {
     <a href="./three.html">3D</a>
     <a href="./universal-mathematics.html">Universal Mathematics</a>
     <a href="./wave.html">Wave</a>
+    <a href="./periodic.html">Periodic Table</a>
     <a href="https://github.com/afomi/alphanon" class="github" target="_blank">GitHub</a>
   `;
   return nav;

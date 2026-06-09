@@ -44,7 +44,6 @@ let alphanonApp = {
     node.add(label);
 
     this.nodesGroup.add(node);
-    this.scene.add(this.nodesGroup);
   },
   setupDatGui: function() {
     const params = {
@@ -62,6 +61,9 @@ let alphanonApp = {
   init: function() {
     this.setupThreeJS();
 
+    // Add the label container group once
+    this.scene.add(this.nodesGroup);
+
     this.drawMainOctaveLine();
     // this.drawOctave(1);
     // this.drawRotatedOctave(1);
@@ -74,7 +76,8 @@ let alphanonApp = {
 
     const lineMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
 
-    this.addTickmarksPerOctave(8);
+    // Disabled: addTickmarksPerOctave currently references undefined module-scope variables
+    // this.addTickmarksPerOctave(8);
   },
   setupThreeJS: function() {
     // Environment Setup: Browser
@@ -135,25 +138,40 @@ let alphanonApp = {
   drawMainOctaveLine: function() {
     // Create the points for a line
     // Create spheres at each octave point
+    const linePoints = [];
+    let currentAmp = this.amplitude;
+
+    const maxElements = periodicTableElements.length;
+
     for (let i = 0; i <= this.totalPoints; i++) {
       const t = i / this.totalPoints;
       const y = (this.sphereHeight / 2) - t * this.sphereHeight;
-      const x = Math.sin(t * this.octaves * Math.PI) * this.amplitude;
-      const z = Math.cos(t * frequency * Math.PI) * (this.amplitude);
-      this.amplitude = this.amplitude * 1.028;
-      points.push(new THREE.Vector3(-x, y, z));
+      const x = Math.sin(t * this.octaves * Math.PI) * currentAmp;
+      const z = Math.cos(t * this.octaves * Math.PI) * currentAmp;
+      currentAmp = currentAmp * 1.028;
+      linePoints.push(new THREE.Vector3(-x, y, z));
 
       const sphereGeometry = new THREE.SphereGeometry(0.15, 16, 16);
       const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0x333333 });
 
       const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
       sphere.position.set(-x, y, z);
-      sphere.userData.name = periodicTableElements[i][1]
+
+      // Only attach label data if we have a corresponding element
+      if (i < maxElements) {
+        sphere.userData.name = periodicTableElements[i][1];
+      } else {
+        sphere.userData.name = "";
+      }
+
       this.scene.add(sphere);
-      this.createLabeledElement(sphere)
+
+      if (sphere.userData.name) {
+        this.createLabeledElement(sphere);
+      }
     }
 
-    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    const geometry = new THREE.BufferGeometry().setFromPoints(linePoints);
     const material = new THREE.LineBasicMaterial({ color: 0x333333 });
     const line = new THREE.Line(geometry, material);
     this.scene.add(line);
@@ -277,32 +295,11 @@ let alphanonApp = {
     }
   },
   addTickmarksPerOctave: function(ticksPerOctave = 4) {
-    let amplitude = 2;
-    const tickLength = 0.3;
-    const tickMaterial = new THREE.LineBasicMaterial({ color: 0x333333 });
-
-    for (let octave = 0; octave < this.octaves; octave++) {
-      for (let i = 0; i < ticksPerOctave; i++) {
-        const t = (octave + i / ticksPerOctave) / frequency;
-        const y = (this.sphereHeight / 2) - t * this.sphereHeight;
-        const x = -Math.sin(t * frequency * Math.PI) * amplitude;
-        amplitude = amplitude * 1.008
-
-        const tickGeom = new THREE.BufferGeometry().setFromPoints([
-          new THREE.Vector3(x - tickLength, y, 0),
-          new THREE.Vector3(x + tickLength, y, 0),
-        ]);
-        this.scene.add(new THREE.Line(tickGeom, tickMaterial));
-      }
-    }
+    // DISABLED: This helper references external variables that no longer exist
+    // and was not part of the primary wave rendering path.
+    // Re-implement using only this.* properties if tickmarks are desired.
+    console.warn("addTickmarksPerOctave is disabled (see PLAN.md Story 1)");
   }
 }
-
-
-let amplitude = 7;
-const frequency = 10; // 10 full sine waves (octaves)
-
-const points = [];
-const sphereHeight = 80;
 
 export { alphanonApp }

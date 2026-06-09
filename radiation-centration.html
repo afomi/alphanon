@@ -1,0 +1,121 @@
+---
+title: Radiation & Centration
+layout: default
+extra_css: |
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  body {
+    background: #888;
+    font-family: Georgia, serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+  h1 {
+    color: #222;
+    font-size: 1.1rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    font-weight: normal;
+  }
+  .pair {
+    display: flex;
+    gap: 3rem;
+    align-items: flex-start;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  canvas {
+    display: block;
+  }
+  .label {
+    font-size: 0.85rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #222;
+  }
+---
+<h1>Radiation &amp; Centration</h1>
+
+<div class="pair">
+  <div class="panel">
+    <canvas
+      id="radiation"
+      width="380"
+      height="380"></canvas>
+    <span class="label">Radiation</span>
+  </div>
+  <div class="panel">
+    <canvas
+      id="centration"
+      width="380"
+      height="380"></canvas>
+    <span class="label">Centration</span>
+  </div>
+</div>
+
+<script>
+  const RINGS = 10;
+
+  function drawPanel(canvas, radii, bg, ringColor) {
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width;
+    const h = canvas.height;
+    const cx = w / 2;
+    const cy = h / 2;
+
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, w, h);
+
+    for (let i = radii.length - 1; i >= 0; i--) {
+      const r = radii[i];
+      if (r <= 0) continue;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.fillStyle = i % 2 === 0 ? ringColor : bg;
+      ctx.fill();
+    }
+  }
+
+  const radiationCanvas = document.getElementById('radiation');
+  const centrationCanvas = document.getElementById('centration');
+
+  const maxR = 185;
+  const SPEED = 0.00025;
+
+  function animate(ts) {
+    const t = ts * SPEED;
+
+    const radii = [];
+    for (let i = 0; i <= RINGS; i++) {
+      const base = (i / RINGS) * maxR;
+      const wave = Math.sin(t - (i / RINGS) * Math.PI * 2) * (maxR / RINGS / 2);
+      radii.push(base + wave);
+    }
+
+    const radiiIn = [];
+    for (let i = 0; i <= RINGS; i++) {
+      const base = (i / RINGS) * maxR;
+      const wave = Math.sin(t + (i / RINGS) * Math.PI * 2) * (maxR / RINGS / 2);
+      radiiIn.push(base + wave);
+    }
+
+    drawPanel(radiationCanvas, radii, '#fff', '#000');
+    drawPanel(centrationCanvas, radiiIn, '#000', '#fff');
+    requestAnimationFrame(animate);
+  }
+
+  requestAnimationFrame(animate);
+</script>

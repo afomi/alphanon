@@ -1,0 +1,442 @@
+---
+title: 18 Dimensions - Russell & Dollard
+layout: default
+extra_css: |
+  body {
+    margin: 0;
+    overflow: hidden;
+  }
+  canvas {
+    display: block;
+  }
+  .overlay {
+    color: #ccc;
+    font-family: sans-serif;
+    position: absolute;
+    z-index: 10;
+    padding: 0.5rem 1rem;
+  }
+  .bottom-center {
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+  }
+  .info-panel {
+    top: 1rem;
+    left: 1rem;
+    max-width: 400px;
+    background: rgba(0,0,0,0.8);
+    border-radius: 8px;
+    padding: 1rem;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .info-panel h1 {
+    font-size: 1.4rem;
+    margin: 0 0 1rem 0;
+    color: #fff;
+  }
+  .info-panel h2 {
+    font-size: 1.1rem;
+    margin: 1rem 0 0.5rem 0;
+    color: #aaf;
+  }
+  .info-panel h3 {
+    font-size: 0.95rem;
+    margin: 0.8rem 0 0.3rem 0;
+    color: #ffa;
+  }
+  .info-panel p {
+    font-size: 0.85rem;
+    margin: 0.3rem 0;
+    line-height: 1.4;
+  }
+  .dimension-list {
+    font-size: 0.8rem;
+    margin: 0.5rem 0;
+    padding-left: 1rem;
+  }
+  .dimension-list li {
+    margin: 0.2rem 0;
+  }
+  .positive { color: #f99; }
+  .negative { color: #99f; }
+  .dollard { color: #9f9; }
+  .legend {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(0,0,0,0.8);
+    border-radius: 8px;
+    padding: 1rem;
+    font-size: 0.8rem;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    margin: 0.3rem 0;
+  }
+  .legend-color {
+    width: 20px;
+    height: 20px;
+    margin-right: 0.5rem;
+    border-radius: 3px;
+  }
+---
+<div class="overlay info-panel">
+  <h1>18 Dimensions</h1>
+  <p>Walter Russell & Eric Dollard</p>
+
+  <h2>Walter Russell's Dimensional Model</h2>
+  <p>
+    Russell conceived the universe as a system of 18 dimensions:
+    9 positive (centripetal/compressive) and 9 negative (centrifugal/expansive).
+    These dimensions represent the rhythmic interchange between gravity and radiation.
+  </p>
+
+  <h3 class="positive">9 Positive Dimensions (Compression)</h3>
+  <p>Inward spiraling toward stillness at the center:</p>
+  <ul class="dimension-list">
+    <li>+1: Point of beginning motion</li>
+    <li>+2: Line of electric potential</li>
+    <li>+3: Plane of magnetic field</li>
+    <li>+4: Sphere of incandescence</li>
+    <li>+5: Cube of crystallization</li>
+    <li>+6: Sphere of maximum compression</li>
+    <li>+7: Reversal plane (amplitude)</li>
+    <li>+8: Sphere of radioactive decay</li>
+    <li>+9: Point of maximum stillness</li>
+  </ul>
+
+  <h3 class="negative">9 Negative Dimensions (Expansion)</h3>
+  <p>Outward spiraling toward space:</p>
+  <ul class="dimension-list">
+    <li>-1: Point of reversed motion</li>
+    <li>-2: Line of discharge</li>
+    <li>-3: Plane of dissolution</li>
+    <li>-4: Sphere of cooling</li>
+    <li>-5: Cube of dispersion</li>
+    <li>-6: Sphere of minimum compression</li>
+    <li>-7: Zero plane (rest)</li>
+    <li>-8: Sphere of regeneration</li>
+    <li>-9: Point of absolute stillness</li>
+  </ul>
+
+  <h2 class="dollard">Eric Dollard's Framework</h2>
+  <p>
+    Dollard describes three fundamental measures of electrical phenomena
+    that map onto geometric dimensions:
+  </p>
+
+  <h3>Span / Distance (1D)</h3>
+  <p>
+    Linear extension in space. The reach or extent of a field.
+    Corresponds to Russell's lines of force.
+  </p>
+
+  <h3>Density / Area (2D)</h3>
+  <p>
+    Concentration per unit area. The intensity of field distribution
+    across a surface. Corresponds to Russell's planes.
+  </p>
+
+  <h3>Concentration / Volume (3D)</h3>
+  <p>
+    Mass per unit volume. The gathering of potential into form.
+    Corresponds to Russell's spheres and cubes.
+  </p>
+
+  <h2>Synthesis</h2>
+  <p>
+    Both frameworks describe the same underlying reality:
+    the rhythmic breathing of the universe between
+    <span class="positive">concentration</span> and
+    <span class="negative">expansion</span>,
+    measured across <span class="dollard">1D, 2D, and 3D</span> space.
+  </p>
+</div>
+
+<div class="overlay legend">
+  <div class="legend-item">
+    <div
+      class="legend-color"
+      style="background: #ff6666;">
+    </div>
+    <span>Positive (Compression)</span>
+  </div>
+  <div class="legend-item">
+    <div
+      class="legend-color"
+      style="background: #6666ff;">
+    </div>
+    <span>Negative (Expansion)</span>
+  </div>
+  <div class="legend-item">
+    <div
+      class="legend-color"
+      style="background: #66ff66;">
+    </div>
+    <span>Dollard: Span (1D)</span>
+  </div>
+  <div class="legend-item">
+    <div
+      class="legend-color"
+      style="background: #ffff66;">
+    </div>
+    <span>Dollard: Density (2D)</span>
+  </div>
+  <div class="legend-item">
+    <div
+      class="legend-color"
+      style="background: #ff66ff;">
+    </div>
+    <span>Dollard: Concentration (3D)</span>
+  </div>
+</div>
+
+<a
+  href="https://github.com/afomi/alphanon"
+  class="overlay bottom-center"
+  target="_blank">
+  GitHub
+</a>
+
+<script type="module">
+  import * as THREE from './assets/js/three.js';
+  import { OrbitControls } from './assets/js/orbitcontrols.js';
+
+  // Scene setup
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x111111);
+
+  // Camera
+  const camera = new THREE.PerspectiveCamera(
+    75,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    1000
+  );
+  camera.position.set(40, 30, 40);
+  camera.lookAt(0, 0, 0);
+
+  // Renderer
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.body.appendChild(renderer.domElement);
+
+  // Controls
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+
+  // Colors
+  const positiveColor = 0xff6666;
+  const negativeColor = 0x6666ff;
+  const spanColor = 0x66ff66;
+  const densityColor = 0xffff66;
+  const concentrationColor = 0xff66ff;
+
+  // Central axis - the stillness point
+  const axisGeometry = new THREE.CylinderGeometry(0.1, 0.1, 40, 16);
+  const axisMaterial = new THREE.MeshBasicMaterial({
+    color: 0xffffff,
+    transparent: true,
+    opacity: 0.3
+  });
+  const axis = new THREE.Mesh(axisGeometry, axisMaterial);
+  scene.add(axis);
+
+  // Create dimensional rings representing the 18 dimensions
+  const dimensionGroup = new THREE.Group();
+
+  // 9 Positive dimensions (compression - going inward/upward)
+  for (let i = 1; i <= 9; i++) {
+    const radius = 20 - (i * 2);
+    const y = i * 2;
+    const opacity = 0.3 + (i * 0.07);
+
+    const ringGeometry = new THREE.TorusGeometry(radius, 0.15, 8, 64);
+    const ringMaterial = new THREE.MeshBasicMaterial({
+      color: positiveColor,
+      transparent: true,
+      opacity: opacity
+    });
+    const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+    ring.rotation.x = Math.PI / 2;
+    ring.position.y = y;
+    dimensionGroup.add(ring);
+  }
+
+  // 9 Negative dimensions (expansion - going outward/downward)
+  for (let i = 1; i <= 9; i++) {
+    const radius = 2 + (i * 2);
+    const y = -i * 2;
+    const opacity = 0.3 + ((10 - i) * 0.07);
+
+    const ringGeometry = new THREE.TorusGeometry(radius, 0.15, 8, 64);
+    const ringMaterial = new THREE.MeshBasicMaterial({
+      color: negativeColor,
+      transparent: true,
+      opacity: opacity
+    });
+    const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+    ring.rotation.x = Math.PI / 2;
+    ring.position.y = y;
+    dimensionGroup.add(ring);
+  }
+
+  scene.add(dimensionGroup);
+
+  // Dollard's 3 dimensions visualization
+  const dollardGroup = new THREE.Group();
+  dollardGroup.position.x = 35;
+
+  // 1D - Span (Line)
+  const spanGeometry = new THREE.BufferGeometry();
+  const spanPoints = [
+    new THREE.Vector3(0, -10, 0),
+    new THREE.Vector3(0, 10, 0)
+  ];
+  spanGeometry.setFromPoints(spanPoints);
+  const spanMaterial = new THREE.LineBasicMaterial({
+    color: spanColor,
+    linewidth: 3
+  });
+  const spanLine = new THREE.Line(spanGeometry, spanMaterial);
+  spanLine.position.z = -8;
+  dollardGroup.add(spanLine);
+
+  // Span arrows
+  const arrowUp = new THREE.ConeGeometry(0.5, 1.5, 8);
+  const arrowMat = new THREE.MeshBasicMaterial({ color: spanColor });
+  const arrowMeshUp = new THREE.Mesh(arrowUp, arrowMat);
+  arrowMeshUp.position.set(0, 10, -8);
+  dollardGroup.add(arrowMeshUp);
+
+  const arrowMeshDown = new THREE.Mesh(arrowUp, arrowMat);
+  arrowMeshDown.position.set(0, -10, -8);
+  arrowMeshDown.rotation.z = Math.PI;
+  dollardGroup.add(arrowMeshDown);
+
+  // 2D - Density (Plane/Area)
+  const densityGeometry = new THREE.PlaneGeometry(12, 12);
+  const densityMaterial = new THREE.MeshBasicMaterial({
+    color: densityColor,
+    transparent: true,
+    opacity: 0.4,
+    side: THREE.DoubleSide
+  });
+  const densityPlane = new THREE.Mesh(densityGeometry, densityMaterial);
+  densityPlane.rotation.y = Math.PI / 4;
+  dollardGroup.add(densityPlane);
+
+  // Density grid lines
+  const gridMaterial = new THREE.LineBasicMaterial({
+    color: densityColor,
+    transparent: true,
+    opacity: 0.6
+  });
+  for (let i = -5; i <= 5; i += 2) {
+    const hLine = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(-6, i, 0),
+      new THREE.Vector3(6, i, 0)
+    ]);
+    const vLine = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(i, -6, 0),
+      new THREE.Vector3(i, 6, 0)
+    ]);
+    const hMesh = new THREE.Line(hLine, gridMaterial);
+    const vMesh = new THREE.Line(vLine, gridMaterial);
+    hMesh.rotation.y = Math.PI / 4;
+    vMesh.rotation.y = Math.PI / 4;
+    dollardGroup.add(hMesh);
+    dollardGroup.add(vMesh);
+  }
+
+  // 3D - Concentration (Volume/Cube)
+  const concentrationGeometry = new THREE.BoxGeometry(8, 8, 8);
+  const concentrationMaterial = new THREE.MeshBasicMaterial({
+    color: concentrationColor,
+    transparent: true,
+    opacity: 0.2
+  });
+  const concentrationCube = new THREE.Mesh(concentrationGeometry, concentrationMaterial);
+  concentrationCube.position.z = 10;
+  dollardGroup.add(concentrationCube);
+
+  // Wireframe for cube
+  const wireframeGeometry = new THREE.EdgesGeometry(concentrationGeometry);
+  const wireframeMaterial = new THREE.LineBasicMaterial({
+    color: concentrationColor,
+    transparent: true,
+    opacity: 0.8
+  });
+  const wireframe = new THREE.LineSegments(wireframeGeometry, wireframeMaterial);
+  wireframe.position.z = 10;
+  dollardGroup.add(wireframe);
+
+  scene.add(dollardGroup);
+
+  // Connecting spiral between Russell and Dollard
+  const spiralPoints = [];
+  for (let t = 0; t < Math.PI * 4; t += 0.1) {
+    const x = 17.5 + t * 2.5;
+    const y = Math.sin(t) * 5;
+    const z = Math.cos(t) * 5;
+    spiralPoints.push(new THREE.Vector3(x, y, z));
+  }
+  const spiralGeometry = new THREE.BufferGeometry().setFromPoints(spiralPoints);
+  const spiralMaterial = new THREE.LineBasicMaterial({
+    color: 0xffffff,
+    transparent: true,
+    opacity: 0.3
+  });
+  const spiral = new THREE.Line(spiralGeometry, spiralMaterial);
+  scene.add(spiral);
+
+  // Pulsating sphere at center (stillness point)
+  const centerGeometry = new THREE.SphereGeometry(1, 32, 32);
+  const centerMaterial = new THREE.MeshBasicMaterial({
+    color: 0xffffff,
+    transparent: true,
+    opacity: 0.8
+  });
+  const centerSphere = new THREE.Mesh(centerGeometry, centerMaterial);
+  scene.add(centerSphere);
+
+  // Animation
+  let time = 0;
+
+  function animate() {
+    requestAnimationFrame(animate);
+    time += 0.01;
+
+    // Rotate the dimensional rings slowly
+    dimensionGroup.rotation.y = time * 0.1;
+
+    // Pulse the center sphere
+    const pulse = 1 + Math.sin(time * 2) * 0.2;
+    centerSphere.scale.set(pulse, pulse, pulse);
+
+    // Rotate Dollard's concentration cube
+    concentrationCube.rotation.x = time * 0.3;
+    concentrationCube.rotation.y = time * 0.2;
+    wireframe.rotation.x = time * 0.3;
+    wireframe.rotation.y = time * 0.2;
+
+    // Oscillate the density plane
+    densityPlane.rotation.z = Math.sin(time * 0.5) * 0.1;
+
+    controls.update();
+    renderer.render(scene, camera);
+  }
+
+  animate();
+
+  // Handle window resize
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+</script>
